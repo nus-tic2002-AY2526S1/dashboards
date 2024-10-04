@@ -3,6 +3,8 @@ title: "tP progress dashboard"
 </frontmatter>
 <p/>
 
+<div id="intro-text">
+
 <h1 class="display-4">tP progress dashboard</h1>
 
 <box>
@@ -34,4 +36,6 @@ If the change was part of a PR, it can only be detected after that PR has been m
 </panel>
 </box>
 
-<include src="{{ module | lower }}/tp-progress-table-fragment.md" />
+</div>
+
+<include src="{{ module | lower }}/tp-progress-table-individual-fragment.md" />
