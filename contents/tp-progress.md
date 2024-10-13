@@ -30,7 +30,7 @@ Ensure the issue is assigned to you, assigned to the corresponding milestone, an
 
 Ensure the PR is assigned to the corresponding milestone, and is merged. Also check the additional conditions (you can view those conditions when you expand the <span class="badge bg-light text-primary me-1">details :fas-bars:</span> icon in your row of the table). After all the required conditions are met, wait for the next dashboard update and check again.
 </panel>
-<panel type="seamless" header="The required change was committed/pushed -- why is is not being detected?">
+<panel type="seamless" header="The required change was committed/pushed -- why is it not being detected?">
 
 If the change was part of a PR, it can only be detected after that PR has been merged. After the PR is merged, wait for the next dashboard update and check again.
 </panel>
