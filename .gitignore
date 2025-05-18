@@ -1,4 +1,5 @@
 .idea/
 _markbind/logs/
 _site/
+node_modules/
 debug.log
