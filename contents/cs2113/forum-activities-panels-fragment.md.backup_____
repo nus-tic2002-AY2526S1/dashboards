@@ -1,0 +1,333 @@
+%%[This page was last updated on Sep 05 2025]%% [**<span class="text-warning">:octicon-eye:</span> indicates those _watching_ the forum** (kudos :+1:)]
+
+
+<panel type="info"  collapsed>
+<div slot="header">
+
+### 1. LIM .. JIN `@yikjin` (5 posts) <span class=text-warning>:octicon-eye:</span>
+</div>
+
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/9" expanded>
+<div slot="header">
+
+**1. :fas-info-circle: Java coding standard: How verbose is too verbose?**
+</div>
+
+Hi, I read from the book that we should ["make the code as explicit as possible, even if the language syntax allows them to be implicit"](https://nus-cs2113-ay2526s1.github.io/website/se-book-adapted/chapters/codeQuality.html#make-the-code-obvious). Since Java can allow one to be quite verbose in its code, I have the following questions:
+
+
+# 1. Should I qualify all usage of static members with class name?
+
+For the following Java code snippet:
+
+'''java
+final class Duke ``{``
+    private static final int MAX_TASKS = 100;
+    private static final Task[] tasks = new Task[MAX_TASKS];
+    //                                           ~~~~~~~~~
+``}``
+'''
+
+IntelliJ IDEA gives the following warning:
+
+'''
+Unqualified static field access 'MAX_TASKS'
+
+Inspection info: Reports usage of static members that is not qualified with the class name.
+
+This is legal if the static member is in the same class, but may be confusing.
+'''
+
+Does the coding standard recommend removing ambiguity by qualifying all usage of static members with the class name? If so, will it be strictly enforced?
+
+'''diff
+-    private static final Task[] tasks = new Task[MAX_TASKS];
++    private static final Task[] tasks = new Task[Duke.MAX_TASKS];
+'''
+
+
+# 2. Should I qualify all usage of fields with `this`?
+
+For the following Java code snippet:
+
+'''java
+final class Task ``{``
+    // ...
+    char getStatusIcon() ``{``
+        return isDone ? 'X' : ' ';
+        //     ~~~~~~
+    ``}``
+``}``
+'''
+
+IntelliJ IDEA gives the following warning:
+
+'''
+Instance field access 'isDone' is not qualified with 'this'
+
+Inspection info: Reports field access operations that are not qualified with this or some other qualifier.
+
+Some coding styles mandate that all field access operations are qualified to prevent confusion with local variable or parameter access
+'''
+
+Does the coding standard recommend removing ambiguity by qualifying all usage of fields with `this`? If so, will it be strictly enforced?
+
+'''diff
+-        return isDone ? 'X' : ' ';
++        return this.isDone ? 'X' : ' ';
+'''
+
+
+# 3. Should all casts be explicitly written?
+
+For the following Java code snippet from [one of Week 4's key exercises](https://nus-cs2113-ay2526s1.github.io/website/schedule/week4/topics.html#key-exercise-print-shape-area):
+
+'''java
+public class Circle extends Shape ``{``
+    private int radius;
+    // ...
+    @Override
+    public int area() ``{``
+        return (int)(Math.PI * radius * radius);
+        //     ~~~~~           ~~~~~~   ~~~~~~
+    ``}``
+``}``
+'''
+
+I noticed that while the narrowing cast from `double` to `int` is explicitly casted, the widening cast from `int` (`radius`) to `double` is not explicitly casted.
+
+What are the requirements for needing to explicitly write the cast v.s. it being okay to not write them?
+
+---
+
+As a side note, may I check how strictly the automated script will check for the adherence to the Java coding standard, as well as how potentially ambiguous things like the above will be marked?
+
+Thank you in advance! :)
+</panel>
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/7" expanded>
+<div slot="header">
+
+**2. :fas-info-circle: Code fails Coursemology test case when using enhanced switch statement**
+</div>
+
+This question is in the context of Exercise 3's [[Key Exercise] `getGradeCap` Method](https://nus-cs2113-ay2526s1.github.io/website/schedule/week2/topics.html#key-exercise-getgradecap-method) in [Week 2's Java Coding Exercise](https://coursemology.org/courses/3128/assessments/83068).
+
+
+# Working code
+
+For the exercise, I wrote the following Java code:
+
+'''java
+public class Main ``{``
+  private static double getGradeCap(final String grade) ``{``
+    switch (grade) ``{``
+      case "A+":
+      case "A":
+        return 5.0;
+      case "A-":
+        return 4.5;
+      case "B+":
+        return 4.0;
+      case "B":
+        return 3.5;
+      case "B-":
+        return 3.0;
+      case "C":
+        return 2.5;
+      default:
+        return 0;
+    ``}``
+  ``}``
+
+  public static void main(String[] args) ``{``
+    System.out.println("A+: " + getGradeCap("A+"));
+    System.out.println("B : " + getGradeCap("B"));
+  ``}``
+``}``
+'''
+
+Running it locally within IntelliJ IDEA works just fine:
+
+'''
+C:\Users\User\scoop\apps\temurin17-jdk\current\bin\java.exe -javaagent:C:\Users\User\scoop\apps\idea\current\IDE\lib\idea_rt.jar=51183 -Dfile.encoding=UTF-8 -classpath C:\Users\User\IdeaProjects\Week2\out\production\Week2 Main
+A+: 5.0
+B : 3.5
+
+Process finished with exit code 0
+'''
+
+Coursemology accepts this version of the code with no issues.
+
+
+# Problematic code
+
+I then noticed that IntelliJ IDEA gives me a suggestion that "Switch statement can be replaced with enhanced 'switch'":
+
+![IntelliJ IDEA suggestion](https://github.com/user-attachments/assets/570f0bad-658b-45ce-8259-a3f2ee0e332e)
+
+Accepting the suggestion to "Replace with 'switch' expression" yields the following Java code:
+
+'''java
+public class Main ``{``
+  private static double getGradeCap(final String grade) ``{``
+    return switch (grade) ``{``
+      case "A+", "A" -&gt; 5.0;
+      case "A-" -&gt; 4.5;
+      case "B+" -&gt; 4.0;
+      case "B" -&gt; 3.5;
+      case "B-" -&gt; 3.0;
+      case "C" -&gt; 2.5;
+      default -&gt; 0;
+    ``}``;
+  ``}``
+
+  public static void main(String[] args) ``{``
+    System.out.println("A+: " + getGradeCap("A+"));
+    System.out.println("B : " + getGradeCap("B"));
+  ``}``
+``}``
+'''
+
+The above code also runs fine locally in IntelliJ IDEA:
+
+'''
+C:\Users\User\scoop\apps\temurin17-jdk\current\bin\java.exe -javaagent:C:\Users\User\scoop\apps\idea\current\IDE\lib\idea_rt.jar=51275 -Dfile.encoding=UTF-8 -classpath C:\Users\User\IdeaProjects\Week2\out\production\Week2 Main
+A+: 5.0
+B : 3.5
+
+Process finished with exit code 0
+'''
+
+However, this time, Coursemology reports that the Java code failed the test case, even though both versions should give the same output.
+
+
+# Local Java setup
+
+I am using [Eclipse Adoptium's build of the OpenJDK-based Eclipse Temurin JDK 17 LTS](https://adoptium.net/temurin/releases/?version=17).
+
+The JDK 17 binaries seen by IntelliJ IDEA and the ones in `$PATH` are the same:
+
+'''cmd
+C:\Users\User\IdeaProjects\Week2> C:\Users\User\scoop\apps\temurin17-jdk\current\bin\javac.exe --version
+javac 17.0.16
+
+C:\Users\User\IdeaProjects\Week2> C:\Users\User\scoop\apps\temurin17-jdk\current\bin\java.exe --version
+openjdk 17.0.16 2025-07-15
+OpenJDK Runtime Environment Temurin-17.0.16+8 (build 17.0.16+8)
+OpenJDK 64-Bit Server VM Temurin-17.0.16+8 (build 17.0.16+8, mixed mode, sharing)
+
+C:\Users\User\IdeaProjects\Week2> where javac
+C:\Users\User\scoop\apps\temurin17-jdk\current\bin\javac.exe
+
+C:\Users\User\IdeaProjects\Week2> where java
+C:\Users\User\scoop\apps\temurin17-jdk\current\bin\java.exe
+'''
+
+
+# Questions
+
+Is it possible that the JRE 17 on Coursemology does not support some features of Java, even though my local machine is using JDK 17?
+- If so, how do I avoid incompatibility issues like this down the line?
+- If not, may I ask what mistake did I make to cause the difference in behaviour shown above?
+
+Thanks! :)
+</panel>
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/6#issuecomment-3210621132" expanded>
+<div slot="header">
+
+**3 :fas-comment:**
+</div>
+
+> Is that a tag on the commit
+
+Yes, [[W2.7] RCS: Getting Started with Git and GitHub](https://nus-cs2113-ay2526s1.github.io/website/schedule/week2/topics.html#t1l6-examining-the-revision-history) makes brief mention of tagging. I didn't find an explanation on how to tag commits on the website, but [W3Schools has a quick primer on how to do that](https://www.w3schools.com/git/git_tagging.asp).
+
+> is it a tag associated with something else, like issues
+
+GitHub uses labels (not tags) to organise issues (e.g. this issue has the ["type-Question :thinking:" label](https://github.com/nus-cs2113-AY2526S1/forum/issues?q=label%3A%22type-Question%20%3Athinking%3A%22)). Issue labels have nothing to do with your code or commits.
+
+> And is it necessary to add tags in our iP?
+
+Yes, see [FAQ: How are the iP git tags used in grading?](https://nus-cs2113-ay2526s1.github.io/website/admin/appendixC-faq.html#faq-how-are-the-ip-git-tags-used-in-grading).
+
+---
+
+Note: Project Duke, the chatbot we're working on for iP, [makes mention of tagging too](https://nus-cs2113-ay2526s1.github.io/website/se-book-adapted/projectDuke/index.html#c-tagging), but that's just a feature of the software that we're going to work on.
+</panel>
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/1#issuecomment-3210679649" expanded>
+<div slot="header">
+
+**4 :fas-comment:**
+</div>
+
+Hey quick nit, in [Coursemology's Week 2 Java coding exercises](https://coursemology.org/courses/3128/assessments/83068), the links for details of each exercise still points to last semester's version (https://nus-cs2113-ay2425s2.github.io/website/schedule/week2/topics.html#...)
+</panel>
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/1#issuecomment-3213197438" expanded>
+<div slot="header">
+
+**5 :fas-comment:**
+</div>
+
+I noticed a discrepancy between the CS2113 website deadlines and Coursemology deadline as well for Week 2 &ndash; the [CS2113 admin page](https://nus-cs2113-ay2526s1.github.io/website/schedule/week2/admin.html#week-2-mon-aug-18th-admin) says the coding exercise was due yesterday ("Thu, Aug 21st 2359"), but [Coursemology Week 2 coding exercise](https://coursemology.org/courses/3128/assessments/83068) says bonus ends on "26 Aug 16:00" instead
+
+---
+
+_Edit:_ As mentioned in Week 2's lecture, follow the CS2113 website deadlines, ignore the Coursemology's bonus points deadline
+</panel>
+
+</panel>
+
+
+<panel type="info"  collapsed>
+<div slot="header">
+
+### 2. T. K..SAMI `@t-kandasami` (2 posts) <span class=text-warning>:octicon-eye:</span>
+</div>
+
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/4" expanded>
+<div slot="header">
+
+**1. :fas-info-circle: Question regarding the use of printf and general enquiry of any banned built-in functions**
+</div>
+
+Hello, can I clarify whether we can use printf instead of print? Also, are there any built-in functions of Java that are banned/not allowed to use in CS2113? Thanks 
+
+</panel>
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/4#issuecomment-3212857151" expanded>
+<div slot="header">
+
+**2 :fas-comment:**
+</div>
+
+understood prof.
+</panel>
+
+</panel>
+
+
+<panel type="info"  collapsed>
+<div slot="header">
+
+### 3. LKE..NAIR `@Rezelix` (1 posts) 
+</div>
+
+
+<panel  popup-url="https://github.com/nus-cs2113-AY2526S1/forum/issues/1#issuecomment-3191030423" expanded>
+<div slot="header">
+
+**1 :fas-comment:**
+</div>
+
+Week 1 Page > 1. Set up the tools > Admin Tools - Communication > MS Teams > MS Team for this class: [CS2113-AY2526S1](https://nus-cs2113-ay2526s1.github.io/website/admin/x)
+
+Hyperlink for "CS2113-AY2526S1" leads to Error 404 Webpage :(
+</panel>
+
+</panel>
