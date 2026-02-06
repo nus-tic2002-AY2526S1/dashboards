@@ -20,7 +20,7 @@
     }
   ],
   "pagesExclude": ["**/*-fragment.md"],
-  "plugins": ["filterTags"],
+  "plugins": ["customviews", "filterTags"],
   "pluginsContext": {
     "filterTags" : {
       "tags": ["m--cs2103"]
